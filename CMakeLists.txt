@@ -121,7 +121,7 @@ EXECUTE_PROCESS(
   OUTPUT_VARIABLE CONFIG_DATE
   )
 IF(CONFIG_DATE)
-	string(STRIP ${CONFIG_DATE} CONFIG_DATE)
+        string(STRIP ${CONFIG_DATE} CONFIG_DATE)
 ENDIF()
 
 # Check to see if we have bash.
@@ -607,20 +607,35 @@ configure_file(${CMAKE_SOURCE_DIR}/test_common.in ${CMAKE_BINARY_DIR}/test_commo
 
 include(CMakePackageConfigHelpers)
 
+set(ConfigPackageLocation "${CMAKE_INSTALL_LIBDIR}/cmake/netCDF")
+
 # Create export configuration
 write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/netCDF/netCDFCxxConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/netCDFCxxConfigVersion.cmake"
   VERSION ${NCXX_VERSION}
   COMPATIBILITY SameMajorVersion
   )
 
 install(
-  FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/netCDF/netCDFCxxConfigVersion.cmake"
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/netCDFCxx
-  COMPONENT headers
+  EXPORT netcdf-cxx4Targets
+  FILE netcdf-cxx4Targets.cmake
+  NAMESPACE netCDF::
+  DESTINATION ${ConfigPackageLocation}
   )
 
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/netCDFCxxConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/netCDFCxxConfig.cmake"
+  INSTALL_DESTINATION "${ConfigPackageLocation}"
+  )
+
+install(
+  FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/netCDFCxxConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/netCDFCxxConfigVersion.cmake"
+  DESTINATION "${ConfigPackageLocation}"
+  COMPONENT headers
+  )
 
 #####
 # Traverse into subdirectories.
@@ -650,8 +665,6 @@ ENDIF(NC_HAS_DEF_VAR_FILTER)
 IF(ENABLE_DOXYGEN)
   ADD_SUBDIRECTORY(docs)
 ENDIF()
-
-
 
 ##
 # CPack, CMakeInstallation.cmake file.
