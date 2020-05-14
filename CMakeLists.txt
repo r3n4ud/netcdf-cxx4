@@ -393,6 +393,11 @@ IF(NC_HAS_DEF_VAR_FILTER)
 ENDIF(NC_HAS_DEF_VAR_FILTER)
 
 ###
+# Find Threads (needed by hdf5)
+###
+find_package(Threads)
+
+###
 # Find HDF5
 ###
 IF(MSVC)
